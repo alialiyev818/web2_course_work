@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructor Detail</title>
+    <link rel="stylesheet"  type="text/css" th:href="@{/css/instructor/detail.style.css}">
+    <link rel="stylesheet" th:href="@{/css/main/header.css}">
+</head>
+<body>
+<header th:replace="main/header"></header>
+
+<div class="container">
+    <h1>Instructor Information</h1>
+    <div class="student-info">
+        <p><strong>Name:</strong> <span th:text="${instructor.name}"></span></p>
+        <p><strong>Surname:</strong> <span th:text="${instructor.surname}"></span></p>
+        <p><strong>Phone:</strong> <span th:text="${instructor.phone}"></span></p>
+        <p><strong>Email:</strong> <span th:text="${instructor.email}"></span></p>
+        <p><strong>Experience:</strong> <span th:text="${instructor.experience}"></span></p>
+    </div>
+</div>
+<div class="container">
+    <div class="add-delete-buttons">
+        <h1>Students</h1>
+        <button id="addButton">Add Student</button>
+    </div>
+    <div class="courses-container" id="coursesContainer">
+        <div th:each="student: ${instructor_students}" class="course">
+            <span th:text="${student.firstName + ' ' + student.lastName}"></span>
+            <a  th:href="@{'/instructors/' + ${instructor.id} + '/students/' + ${student.id} + '/remove'}" class="delete-button">Delete</a>
+        </div>
+    </div>
+</div>
+
+<div id="addModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Add Course</h2>
+        <form method="post" id="addCourseForm" th:action="@{/instructors/{instructorId}/addStudent(instructorId=${instructor.id})}">
+            <div>
+                <label>Select Student:</label>
+                <select name="studentId" id="courseSelect">
+                    <option th:each="student: ${students}" th:value="${student.id}" th:text="${student.firstName + ' ' + student.lastName}"></option>
+                </select>
+            </div>
+            <button type="submit">Add</button>
+        </form>
+    </div>
+</div>
+<script th:src="@{/js/instructor-detail.js}"></script>
+
+</body>
+</html>

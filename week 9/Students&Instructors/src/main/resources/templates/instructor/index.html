@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructor Page</title>
+    <link rel="stylesheet" th:href="@{/css/student/index.style.css}">
+    <link rel="stylesheet" th:href="@{/css/main/header.css}">
+    <link rel="stylesheet" th:href="@{/css/pagination/pagination.css}">
+</head>
+
+<body>
+<header th:replace="main/header"></header>
+
+<main>
+    <div class="container">
+        <form th:action="@{/instructors}" method="get" class="filter-section">
+            <div>
+                <label for="nameFilter">Name:</label>
+                <input type="text" th:value="${name}" name="name" id="nameFilter" placeholder="Filter by Name">
+            </div>
+            <div>
+                <label for="surnameFilter">Surname:</label>
+                <input type="text" th:value="${surname}" name="surname" id="surnameFilter"  placeholder="Filter by Surname">
+            </div>
+
+            <div style="display: flex; flex-direction: row; gap: 10px;">
+                <button type="submit" style="width: 100%;" class="submit-button">Search</button>
+                <button style="width: 100%;" type="button" onclick="reset_btn_instructors()" class="reset-button">Reset</button>
+            </div>
+        </form>
+    </div>
+    <div class="container" >
+        <div style="display:flex; justify-content: flex-end; width: 100%; align-items:center; gap: 10px;">
+            <select onchange="location = this.value;">
+                <option th:selected="${sortBy == 'name' and direction == 'asc'}" th:value="@{/instructors(name=${name}, surname=${surname}, sortBy='name', direction='asc')}">Name - asc</option>
+                <option th:selected="${sortBy == 'name' and direction == 'desc'}" th:value="@{/instructors(name=${name}, surname=${surname}, sortBy='name', direction='desc')}">Name - desc</option>
+
+                <option th:selected="${sortBy == 'surname' and direction == 'asc'}" th:value="@{/instructors(name=${name}, surname=${surname}, sortBy='surname', direction='asc')}">Surname - asc</option>
+                <option th:selected="${sortBy == 'surname' and direction == 'desc'}" th:value="@{/instructors(name=${name}, surname=${surname}, sortBy='surname', direction='desc')}">Surname - desc</option>
+            </select>
+            <button class="add-student-button" id="addStudentButton">Add Instructor</button>
+        </div>
+    </div>
+    <div class="container" id="studentContainer">
+        <div th:each="instructor : ${instructors}" class="student-block">
+            <div class="student-info">
+                <label>Name:</label>
+                <span th:text="${instructor.name}"></span>
+            </div>
+            <div class="student-info">
+                <label>Surname:</label>
+                <span th:text="${instructor.surname}"></span>
+            </div>
+            <div class="student-info">
+                <label>Experience:</label>
+                <span th:text="${instructor.experience}"></span>
+            </div>
+            <div class="student-info">
+                <label>Email:</label>
+                <span th:text="${instructor.email}"></span>
+            </div>
+            <div class="student-info">
+                <label>Phone:</label>
+                <span th:text="${instructor.phone}"></span>
+            </div>
+            <div class="student-info">
+                <label>Courses:</label>
+                <a th:href="@{'/instructors/' + ${instructor.id}}" class="btn" >View Students</a>
+            </div>
+            <div class="btn-group" style="margin-top: 15px;">
+                <button class="btn" th:onclick="openUpdateModal2([[${instructor.id}]],[[${instructor.name}]],[[${instructor.surname}]],[[${instructor.email}]],[[${instructor.experience}]],[[${instructor.phone}]])">Update</button>
+                <a th:href="@{'/instructors/' + ${instructor.id} + '/delete'}" class="btn">Delete</a>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:flex;justify-content: center;">
+        <ul class="pagination modal-2" th:if="${totalPages > 1}">
+            <li>
+                <a th:href="@{/instructors(page=0,sortBy=${sortBy},direction=${direction}, name=${name}, surname=${surname})}" class="prev">&laquo;</a>
+            </li>
+            <li th:each="page : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 0, currentPage + 2 > totalPages - 1 ? totalPages - 1 : currentPage + 2)}">
+                <a th:href="@{/instructors(page=${page},sortBy=${sortBy},direction=${direction}, name=${name}, surname=${surname})}" th:class="${currentPage == page ? 'active' : ''}" th:text="${page + 1}"></a>
+            </li>
+            <li>
+                <a th:href="@{/instructors(page=${totalPages - 1},sortBy=${sortBy},direction=${direction},name=${name}, surname=${surname})}" class="next">&raquo;</a>
+            </li>
+        </ul>
+    </div>
+</main>
+
+<!-- Modal -->
+<div id="myModal"
+     class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Add Instructor</h2>
+        <form method="post" th:action="${'/instructors'}" id="addStudentForm">
+            <div>
+                <label for="studentName">Name:</label>
+                <input type="text" id="studentName" name="name" required>
+            </div>
+            <div>
+                <label for="studentSurname">Surname:</label>
+                <input type="text" id="studentSurname" name="surname" required>
+            </div>
+            <div>
+                <label for="studentEmail">Email:</label>
+                <input type="email" id="studentEmail" name="email" required>
+            </div>
+            <div>
+                <label for="studentPhone">Phone:</label>
+                <input type="tel" id="studentPhone" name="phone" required>
+            </div>
+            <div>
+                <label for="studentExperience">Experience:</label>
+                <input type="tel" id="studentExperience" name="experience" required>
+            </div>
+            <button type="submit">Add</button>
+        </form>
+    </div>
+</div>
+
+<!-- Update Modal -->
+<div id="updateModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Update Student</h2>
+        <form method="post" id="updateStudentForm">
+
+        </form>
+    </div>
+</div>
+
+<script th:src="@{/js/student.js}"></script>
+</body>
+</html>
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Courses View</title>-->
+<!--    <link rel="stylesheet" th:href="@{/css/instructor/index.style.css}">-->
+<!--    <link rel="stylesheet" th:href="@{/css/pagination/pagination.css}">-->
+<!--    <link rel="stylesheet" th:href="@{/css/main/header.css}">-->
+
+<!--</head>-->
+<!--<body>-->
+<!--<header th:replace="main/header"></header>-->
+<!--<div class="container">-->
+<!--    <div class="navbar">-->
+<!--        <div style="display:flex;">-->
+<!--            <form action="" style="display:flex; background-color: #45a049;border-radius: 15px;overflow:hidden;">-->
+<!--                <input th:value="${search}" type="text" class="searchInput"  name="search"  placeholder="Search...">-->
+<!--                <button type="submit" style="background-color: #45a049;color:white;">Search</button>-->
+<!--            </form>-->
+<!--            <select class="sortBy" onchange="location = this.value;">-->
+<!--                <option th:selected="${sortBy == 'name' and direction == 'asc' }" th:value="${'/courses?sortBy=name&direction=asc' + (search != null ? '&search=' + search : '')}">Name Asc</option>-->
+<!--                <option th:selected="${sortBy == 'name' and direction == 'desc' }" th:value="${'/courses?sortBy=name&direction=desc' + (search != null ? '&search=' + search : '')}">Name Desc</option>-->
+<!--            </select>-->
+<!--        </div>-->
+<!--        <div style="float: right;">-->
+<!--            <button class="btn" onclick="openAddModal()">Add Course</button>-->
+<!--        </div>-->
+
+<!--    </div>-->
+<!--    <div class="navbar1">-->
+<!--        <form class="search-container" style="display:flex; background-color: #45a049;border-radius: 15px;overflow:hidden;">-->
+<!--            <input th:value="${search}" type="text" class="searchInput"  name="search" placeholder="Search...">-->
+<!--            <button type="submit" style="background-color: #45a049; padding: 0 10px; color:white;">Search</button>-->
+<!--        </form>-->
+<!--        <div class="buttons-container">-->
+<!--            <div>-->
+<!--                <select class="sortBy" onchange="location = this.value;">-->
+<!--                    <option th:selected="${sortBy == 'name' and direction == 'asc' }" th:value="${'/courses?sortBy=name&direction=asc' + (search != null ? '&search=' + search : '')}">Name Asc</option>-->
+<!--                    <option th:selected="${sortBy == 'name' and direction == 'desc' }" th:value="${'/courses?sortBy=name&direction=desc' + (search != null ? '&search=' + search : '')}">Name Desc</option>-->
+<!--                </select>-->
+<!--            </div>-->
+<!--            <div>-->
+<!--                <button class="btn" onclick="openAddModal()">Add Course</button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="courses-container" id="coursesContainer">-->
+<!--        <div  th:each="instructor : ${instructors}" class="course">-->
+<!--            <span th:text="${instructor.name}"></span>-->
+<!--            <p th:text="${instructor.surname}"></p>-->
+<!--            <div th:text="${instructor.id}" style="display:none;"></div>-->
+<!--            <div class="student-info">-->
+<!--&lt;!&ndash;                <label>Students:</label>&ndash;&gt;-->
+<!--&lt;!&ndash;                <a th:href="@{'/courses/' + ${course.id}}" class="btn">View Students</a>&ndash;&gt;-->
+<!--            </div>-->
+<!--            <a class="delete-button" th:href="@{'/instructors/' + ${instructor.id} + '/delete'}">Delete</a>-->
+<!--            <button class="edit-button" onclick="openEditModal(this.parentElement)">Edit</button>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div style="display:flex;justify-content: center;">-->
+<!--        <ul class="pagination modal-2" th:if="${totalPages > 1}">-->
+<!--            <li>-->
+<!--                <a th:href="@{/courses(page=0,sortBy=${sortBy},direction=${direction}, search=${search})}" class="prev">&laquo;</a>-->
+<!--            </li>-->
+<!--            <li th:each="page : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 0, currentPage + 2 > totalPages - 1 ? totalPages - 1 : currentPage + 2)}">-->
+<!--                <a th:href="@{/courses(page=${page},sortBy=${sortBy},direction=${direction}, search=${search})}" th:class="${currentPage == page ? 'active' : ''}" th:text="${page + 1}"></a>-->
+<!--            </li>-->
+<!--            <li>-->
+<!--                <a th:href="@{/courses(page=${totalPages - 1},sortBy=${sortBy},direction=${direction}, search=${search})}" class="next">&raquo;</a>-->
+<!--            </li>-->
+<!--        </ul>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<div id="addModal" class="modal">-->
+<!--    <div class="modal-content">-->
+<!--        <span class="close" onclick="closeAddModal()">&times;</span>-->
+<!--        <h2>Add Instructor</h2>-->
+<!--        <form id="addCourseForm" method="post" th:action="@{/instructors}">-->
+<!--            <div>-->
+<!--                <label for="name">Name:</label>-->
+<!--                <input type="text" id="name" name="name">-->
+<!--            </div>-->
+<!--            <div>-->
+<!--                <label for="surname">Surname:</label>-->
+<!--                <input type="text" id="surname" name="surname">-->
+<!--            </div>-->
+<!--            <div>-->
+<!--                <label for="email">Email:</label>-->
+<!--                <input type="email" id="email" name="email">-->
+<!--            </div>-->
+<!--            <div>-->
+<!--                <label for="phone">Phone:</label>-->
+<!--                <input type="text" id="phone" name="phone">-->
+<!--            </div>-->
+<!--            <div>-->
+<!--                <label for="experience">Experience:</label>-->
+<!--                <input type="text" id="experience" name="experience">-->
+<!--            </div>-->
+<!--            <button type="submit">Add</button>-->
+<!--        </form>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--<div id="editModal" class="modal">-->
+<!--    <div class="modal-content">-->
+<!--        <span class="close" onclick="closeEditModal()">&times;</span>-->
+<!--        <h2>Edit Course</h2>-->
+<!--        <form id="editCourseForm" method="post">-->
+<!--            <div>-->
+<!--                <label for="editCourseName">Course Name:</label>-->
+<!--                <input type="text" id="editCourseName" name="name">-->
+<!--            </div>-->
+<!--            <div>-->
+<!--                <label for="editCourseDescription">Description:</label>-->
+<!--                <textarea id="editCourseDescription" name="description"></textarea>-->
+<!--            </div>-->
+<!--            <button type="submit">Save Changes</button>-->
+<!--        </form>-->
+<!--    </div>-->
+<!--</div>-->
+<!--<script th:src="@{/js/course.js}"></script>-->
+<!--</body>-->
+<!--</html>-->
+

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students Page</title>
+    <link rel="stylesheet" th:href="@{/css/student/index.style.css}">
+    <link rel="stylesheet" th:href="@{/css/main/header.css}">
+    <link rel="stylesheet" th:href="@{/css/pagination/pagination.css}">
+</head>
+
+<body>
+<header th:replace="main/header"></header>
+
+<main>
+    <div class="container">
+        <form th:action="@{/students}" method="get" class="filter-section">
+            <div>
+                <label for="nameFilter">Name:</label>
+                <input type="text" th:value="${firstName}" name="firstName" id="nameFilter" placeholder="Filter by Name">
+            </div>
+            <div>
+                <label for="surnameFilter">Surname:</label>
+                <input type="text" th:value="${lastName}" name="lastName" id="surnameFilter"  placeholder="Filter by Surname">
+            </div>
+            <div>
+                <label for="emailFilter">Email:</label>
+                <input type="text" th:value="${email}" name="email"  id="emailFilter"  placeholder="Filter by Email">
+            </div>
+            <div>
+                <label for="phoneFilter">Phone:</label>
+                <input type="text" th:value="${phone}" name="phone"  id="phoneFilter"  placeholder="Filter by Phone">
+            </div>
+            <div>
+                <label for="ageFromFilter">Age:</label>
+                <input type="number" th:value="${age}" name="age"  id="ageFromFilter"  placeholder="Filter by Age">
+            </div>
+            <div style="display: flex; flex-direction: row; gap: 10px;">
+                <button style="width: 100%;" type="button" id="reset-btn" class="reset-button">Reset</button>
+                <button type="submit" style="width: 100%;" class="submit-button">Search</button>
+            </div>
+        </form>
+    </div>
+    <div class="container" >
+        <div style="display:flex; justify-content: flex-end; width: 100%; align-items:center; gap: 10px;">
+            <select onchange="location = this.value;">
+                <option th:selected="${sortBy == 'firstname' and direction == 'asc'}" th:value="@{/students(firstName=${firstName}, lastName=${lastName}, email=${email}, age=${age}, phone=${phone}, sortBy='firstname', direction='asc')}">Name - asc</option>
+                <option th:selected="${sortBy == 'firstname' and direction == 'desc'}" th:value="@{/students(firstName=${firstName}, lastName=${lastName}, email=${email}, age=${age}, phone=${phone}, sortBy='firstname', direction='desc')}">Name - desc</option>
+
+                <option th:selected="${sortBy == 'lastname' and direction == 'asc'}" th:value="@{/students(firstName=${firstName}, lastName=${lastName}, email=${email}, age=${age}, phone=${phone}, sortBy='lastname', direction='asc')}">Surname - asc</option>
+                <option th:selected="${sortBy == 'lastname' and direction == 'desc'}" th:value="@{/students(firstName=${firstName}, lastName=${lastName}, email=${email}, age=${age}, phone=${phone}, sortBy='lastname', direction='desc')}">Surname - desc</option>
+
+                <option th:selected="${sortBy == 'email' and direction == 'asc'}" th:value="@{/students(firstName=${firstName}, lastName=${lastName}, email=${email}, age=${age}, phone=${phone}, sortBy='email', direction='asc')}">Email - asc</option>
+                <option th:selected="${sortBy == 'email' and direction == 'desc'}" th:value="@{/students(firstName=${firstName}, lastName=${lastName}, email=${email}, age=${age}, phone=${phone}, sortBy='email', direction='desc')}">Email - desc</option>
+
+                <option th:selected="${sortBy == 'age' and direction == 'asc'}" th:value="@{/students(firstName=${firstName}, lastName=${lastName}, email=${email}, age=${age}, phone=${phone}, sortBy='age', direction='asc')}">Age - asc</option>
+                <option th:selected="${sortBy == 'age' and direction == 'desc'}" th:value="@{/students(firstName=${firstName}, lastName=${lastName}, email=${email}, age=${age}, phone=${phone}, sortBy='age', direction='desc')}">Age - desc</option>
+
+                <option th:selected="${sortBy == 'phone' and direction == 'asc'}" th:value="@{/students(firstName=${firstName}, lastName=${lastName}, email=${email}, age=${age}, phone=${phone}, sortBy='phone', direction='asc')}">Phone - asc</option>
+                <option th:selected="${sortBy == 'phone' and direction == 'desc'}" th:value="@{/students(firstName=${firstName}, lastName=${lastName}, email=${email}, age=${age}, phone=${phone}, sortBy='phone', direction='desc')}">Phone - desc</option>
+
+            </select>
+        <button class="add-student-button" id="addStudentButton">Add Student</button>
+        </div>
+    </div>
+    <div class="container" id="studentContainer">
+        <div th:each="student : ${students}" class="student-block">
+            <div class="student-info">
+                <label>Name:</label>
+                <span th:text="${student.firstName}"></span>
+            </div>
+            <div class="student-info">
+                <label>Surname:</label>
+                <span th:text="${student.lastName}"></span>
+            </div>
+            <div class="student-info">
+                <label>Age:</label>
+                <span th:text="${student.age}"></span>
+            </div>
+            <div class="student-info">
+                <label>Email:</label>
+                <span th:text="${student.email}"></span>
+            </div>
+            <div class="student-info">
+                <label>Phone:</label>
+                <span th:text="${student.phone}"></span>
+            </div>
+            <div class="student-info">
+                <label>Courses:</label>
+                <a th:href="@{'/students/' + ${student.id}}" class="btn" >View Courses</a>
+            </div>
+            <div class="btn-group" style="margin-top: 15px;">
+                <button class="btn" th:onclick="openUpdateModal([[${student.id}]],[[${student.firstName}]],[[${student.lastName}]],[[${student.email}]],[[${student.age}]],[[${student.phone}]])">Update</button>
+                <a th:href="@{'/students/' + ${student.id} + '/delete'}" class="btn">Delete</a>
+            </div>
+        </div>
+    </div>
+
+    <div style="display:flex;justify-content: center;">
+        <ul class="pagination modal-2" th:if="${totalPages > 1}">
+            <li>
+                <a th:href="@{/students(page=0,sortBy=${sortBy},direction=${direction}, firstName=${firstName}, lastName=${lastName}, email=${email}, age=${age}, phone=${phone})}" class="prev">&laquo;</a>
+            </li>
+            <li th:each="page : ${#numbers.sequence(currentPage > 2 ? currentPage - 2 : 0, currentPage + 2 > totalPages - 1 ? totalPages - 1 : currentPage + 2)}">
+                <a th:href="@{/students(page=${page},sortBy=${sortBy},direction=${direction},  firstName=${firstName}, lastName=${lastName}, email=${email}, age=${age}, phone=${phone})}" th:class="${currentPage == page ? 'active' : ''}" th:text="${page + 1}"></a>
+            </li>
+            <li>
+                <a th:href="@{/students(page=${totalPages - 1},sortBy=${sortBy},direction=${direction},  firstName=${firstName}, lastName=${lastName}, email=${email}, age=${age}, phone=${phone})}" class="next">&raquo;</a>
+            </li>
+        </ul>
+    </div>
+</main>
+
+<!-- Modal -->
+<div id="myModal"
+     class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Add Student</h2>
+        <form method="post" th:action="${'/students'}" id="addStudentForm">
+            <div>
+                <label for="studentName">Name:</label>
+                <input type="text" id="studentName" name="firstName" required>
+            </div>
+            <div>
+                <label for="studentSurname">Surname:</label>
+                <input type="text" id="studentSurname" name="lastName" required>
+            </div>
+            <div>
+                <label for="studentAge">Age:</label>
+                <input type="number" id="studentAge" name="age" required>
+            </div>
+            <div>
+                <label for="studentEmail">Email:</label>
+                <input type="email" id="studentEmail" name="email" required>
+            </div>
+            <div>
+                <label for="studentPhone">Phone:</label>
+                <input type="tel" id="studentPhone" name="phone" required>
+            </div>
+            <button type="submit">Add</button>
+        </form>
+    </div>
+</div>
+
+<!-- Update Modal -->
+<div id="updateModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Update Student</h2>
+        <form method="post" id="updateStudentForm">
+
+        </form>
+    </div>
+</div>
+
+<script th:src="@{/js/student.js}"></script>
+</body>
+</html>

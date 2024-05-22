@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students Detail</title>
+    <link rel="stylesheet" th:href="@{'/css/student/detail.style.css'}">
+    <link rel="stylesheet" th:href="@{/css/main/header.css}">
+
+</head>
+<body>
+<header th:replace="main/header"></header>
+<div class="container">
+    <h1>Student Information</h1>
+    <div class="student-info">
+        <p><strong>Name:</strong> <span th:text="${student.firstName}"></span></p>
+        <p><strong>Surname:</strong> <span th:text="${student.lastName}"></span></p>
+        <p><strong>Age:</strong> <span th:text="${student.age}"></span></p>
+        <p><strong>Phone:</strong> <span th:text="${student.phone}"></span></p>
+        <p><strong>Email:</strong> <span th:text="${student.email}"></span></p>
+    </div>
+</div>
+<div class="container">
+    <div class="courses-container" id="coursesContainer">
+        <div class="course" th:each="instructor : ${student.instructors}">
+            <span th:text="${instructor.name} + ${instructor.surname}"></span>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
