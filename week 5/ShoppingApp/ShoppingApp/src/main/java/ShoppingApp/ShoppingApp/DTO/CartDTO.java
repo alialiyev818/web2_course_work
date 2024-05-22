@@ -1,42 +1,18 @@
 package ShoppingApp;
 
-import javax.persistence.*;
 import java.util.List;
 
-@Entity
-public class Order {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-    private String customerName;
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+public class CartDTO {
     private List<Product> products;
     private double totalWeight;
     private double totalPrice;
 
-    public Order() {}
+    public CartDTO() {}
 
-    public Order(String customerName, List<Product> products, double totalWeight, double totalPrice) {
-        this.customerName = customerName;
+    public CartDTO(List<Product> products, double totalWeight, double totalPrice) {
         this.products = products;
         this.totalWeight = totalWeight;
         this.totalPrice = totalPrice;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCustomerName() {
-        return customerName;
-    }
-
-    public void setCustomerName(String customerName) {
-        this.customerName = customerName;
     }
 
     public List<Product> getProducts() {

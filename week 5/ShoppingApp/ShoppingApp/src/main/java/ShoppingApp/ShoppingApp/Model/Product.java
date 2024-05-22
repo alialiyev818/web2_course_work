@@ -1,14 +1,11 @@
-package ShoppingApp.ShoppingApp.Model;
+package ShoppingApp;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
 @Entity
-@Table(name = "products")
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -16,8 +13,45 @@ public class Product {
     private String name;
     private double weight;
     private double price;
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
 
+    public Product() {}
+
+    public Product(String name, double weight, double price) {
+        this.name = name;
+        this.weight = weight;
+        this.price = price;
+    }
+
+    // Getters and setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
 }

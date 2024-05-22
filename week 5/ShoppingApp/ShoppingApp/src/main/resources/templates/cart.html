@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cart</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/style.css}" />
+</head>
+<body>
+    <h1>Shopping Cart</h1>
+    <div>
+        <a th:href="@{/}">Home</a>
+        <a th:href="@{/products}">Products</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Weight</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="item : ${cart.products}">
+                <td th:text="${item.product.name}">Product Name</td>
+                <td th:text="${item.product.weight}">Weight</td>
+                <td th:text="${item.product.price}">Price</td>
+                <td th:text="${item.quantity}">1</td>
+                <td th:text="${item.product.price * item.quantity}">Total Price</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="4">Total Weight:</th>
+                <td th:text="${cart.totalWeight}">Total Weight</td>
+            </tr>
+            <tr>
+                <th colspan="4">Total Price:</th>
+                <td th:text="${cart.totalPrice}">Total Price</td>
+            </tr>
+        </tfoot>
+    </table>
+</body>
+</html>
